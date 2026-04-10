@@ -45,6 +45,10 @@ const findUserByName = (name) => {
   );
 };
 
+app.get("/", (req, res) => {
+  res.send("go to /users chat");
+});
+
 app.get("/users", (req, res) => {
   const name = req.query.name;
   if (name != undefined) {
