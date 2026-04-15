@@ -98,17 +98,28 @@ app.get("/users/:id", (req, res) => {
 const addUser = (user) => {
   users["users_list"].push(user);
   return user;
+
 };
 
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
-  addUser(userToAdd);
-  res.send();
+  userToAdd["id"] = generateId();
+  let result = addUser(userToAdd);
+  res.status(201).send(result);
 });
+
+//random id generator
+const generateId = () => {
+  return Math.random().toString(36).substring(2, 7);
+}
 
 //delete user
 const deleteUserById = (id) => {
-    users["users_list"] = users["users_list"].filter((user) => user["id"] !== id);
+    const index = users["users_list"].findIndex((user) => user["id"] === id);
+    if (index !== -1) {
+        return users["users_list"].splice(index, 1);
+    }
+    return undefined;
 };
 
 app.delete("/users/:id", (req, res) => {
@@ -117,7 +128,7 @@ app.delete("/users/:id", (req, res) => {
     if (delete_result === undefined) {
         res.status(404).send("Resource not found.");
     } else {
-      res.send(delete_result);
+      res.status(200).send(delete_result);
     }
 });
 

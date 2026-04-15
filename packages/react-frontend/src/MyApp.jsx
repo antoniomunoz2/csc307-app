@@ -14,15 +14,31 @@ function MyApp() {
     }, []);
 
     function removeOneCharacter(index) {
-        const updated = characters.filter((character, i) => {
-            return i !== index;
-        });
-        setCharacters(updated);
+        deleteUser(characters[index].id)
+            .then((res) => {
+                if (res.status === 200) {
+                    const updated = characters.filter((character, i) => {
+                    return i !== index;
+                    });
+                    setCharacters(updated);
+                }   
+                })
+            .catch((error) => {
+                console.log(error);
+            });
     }
 
     function updateList(person) {
         postUser(person)
-            .then(() => setCharacters([...characters, person]))
+            .then(res => {
+                return res.status === 201 ? res.json(): undefined;  
+            })
+            .then((json) => {
+                console.log("json:", json);
+                if (json){
+                    setCharacters([...characters, json])
+                } 
+            })
             .catch((error) => {
                 console.log(error);
             });
@@ -42,6 +58,13 @@ function MyApp() {
             body:JSON.stringify(person),
         });
 
+        return promise;
+    }
+
+    function deleteUser(id) {
+        const promise = fetch(`http://localhost:8000/users/${id}`, {
+            method: "DELETE",
+        });
         return promise;
     }
 
